@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""a function that adds 2 tuples."""
+
 def add_tuple(tuple_a=(), tuple_b=()):
     a1 = 0
     a2 = 0
