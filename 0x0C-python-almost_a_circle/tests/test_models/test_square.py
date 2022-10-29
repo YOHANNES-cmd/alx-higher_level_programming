@@ -1,449 +1,548 @@
 #!/usr/bin/python3
-""" Module for test Square class """
+"""Module for Square unit tests"""
 import unittest
-from io import StringIO
-from unittest import TestCase
-from unittest.mock import patch
-from models.square import Square
-from models.rectangle import Rectangle
 from models.base import Base
+from models.rectangle import Rectangle
+from models.square import Square
+import io
+from contextlib import redirect_stdout
+from models.square import __doc__ as doc_check
 
 
-class TestSquareMethods(unittest.TestCase):
-    """ Suite to test Square class """
-
+class TestSquare(unittest.TestCase):
+    """Test the Rectangle Class"""
     def setUp(self):
-        """ Method invoked for each test """
+        """Initialize nb_objects before each test"""
         Base._Base__nb_objects = 0
 
-    def test_new_square(self):
-        """ Test new square """
-        new = Square(3)
-        self.assertEqual(new.size, 3)
-        self.assertEqual(new.width, 3)
-        self.assertEqual(new.height, 3)
-        self.assertEqual(new.x, 0)
-        self.assertEqual(new.y, 0)
-        self.assertEqual(new.id, 1)
-
-    def test_new_square_2(self):
-        """ Test new square with all attrs """
-        new = Square(2, 5, 5, 4)
-        self.assertEqual(new.size, 2)
-        self.assertEqual(new.width, 2)
-        self.assertEqual(new.height, 2)
-        self.assertEqual(new.x, 5)
-        self.assertEqual(new.y, 5)
-        self.assertEqual(new.id, 4)
-
-    def test_new_squares(self):
-        """ Test new squares """
-        new = Square(1, 1)
-        new2 = Square(1, 1)
-        self.assertEqual(False, new is new2)
-        self.assertEqual(False, new.id == new2.id)
-
-    def test_is_Base_instance(self):
-        """ Test Square is a Base instance """
-        new = Square(1)
-        self.assertEqual(True, isinstance(new, Base))
-
-    def test_is_Rectangle_instance(self):
-        """ Test Square is a Rectangle instance """
-        new = Square(1)
-        self.assertEqual(True, isinstance(new, Rectangle))
-
-    def test_incorrect_amount_attrs(self):
-        """ Test error raise with no args passed """
-        with self.assertRaises(TypeError):
-            new = Square()
-
-    def test_incorrect_amount_attrs_1(self):
-        """ Test error raised with no args passed """
-        with self.assertRaises(TypeError):
-            new = Square(1, 1, 1, 1, 1)
-
-    def test_access_private_attrs(self):
-        """ Trying to access to a private attribute """
-        new = Square(1)
-        with self.assertRaises(AttributeError):
-            new.__width
-
-    def test_access_private_attrs_2(self):
-        """ Trying to access to a private attribute """
-        new = Square(1)
-        with self.assertRaises(AttributeError):
-            new.__height
-
-    def test_access_private_attrs_3(self):
-        """ Trying to access to a private attribute """
-        new = Square(1)
-        with self.assertRaises(AttributeError):
-            new.__x
-
-    def test_access_private_attrs_4(self):
-        """ Trying to access to a private attribute """
-        new = Square(1)
-        with self.assertRaises(AttributeError):
-            new.__y
-
-    def test_valide_attrs(self):
-        """ Trying to pass a string value """
-        with self.assertRaises(TypeError):
-            new = Square("2", 2, 2, 2)
-
-    def test_valide_attrs_2(self):
-        """ Trying to pass a string value """
-        with self.assertRaises(TypeError):
-            new = Square(2, "2", 2, 2)
-
-    def test_valide_attrs_3(self):
-        """ Trying to pass a string value """
-        with self.assertRaises(TypeError):
-            new = Square(2, 2, "2", 2)
-
-    def test_value_attrs(self):
-        """ Trying to pass invalid values """
-        with self.assertRaises(ValueError):
-            new = Square(0)
-
-    def test_value_attrs_2(self):
-        """ Trying to pass invalid values """
-        with self.assertRaises(ValueError):
-            new = Square(1, -1)
-
-    def test_value_attrs_3(self):
-        """ Trying to pass invalid values """
-        with self.assertRaises(ValueError):
-            new = Square(1, 1, -1)
-
-    def test_area(self):
-        """ Checking the return value of area method """
-        new = Square(4)
-        self.assertEqual(new.area(), 16)
-
-    def test_load_from_file(self):
-        """ Test load JSON file """
-        load_file = Square.load_from_file()
-        self.assertEqual(load_file, load_file)
-
-    def test_area_2(self):
-        """ Checking the return value of area method """
-        new = Square(2)
-        self.assertEqual(new.area(), 4)
-        new.size = 5
-        self.assertEqual(new.area(), 25)
-
-    def test_display(self):
-        """ Test string printed """
-        r1 = Square(2)
-        res = "##\n##\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            r1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_display_2(self):
-        """ Test string printed """
-        r1 = Square(4)
-        res = "####\n####\n####\n####\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            r1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-        r1.size = 5
-        res = "#####\n#####\n#####\n#####\n#####\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            r1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_str(self):
-        """ Test __str__ return value """
-        r1 = Square(4, 2, 2)
-        res = "[Square] (1) 2/2 - 4\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(r1)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_str_2(self):
-        """ Test __str__ return value """
-        r1 = Square(3, 2, 5, 3)
-        res = "[Square] (3) 2/5 - 3\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(r1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        r1.id = 1
-        r1.size = 11
-        res = "[Square] (1) 2/5 - 11\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(r1)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_str_3(self):
-        """ Test __str__ return value """
-        s1 = Square(5)
-        res = "[Square] (1) 0/0 - 5\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s2 = Square(3, 7, 1)
-        res = "[Square] (2) 7/1 - 3\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s2)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s3 = Square(1, 1, 1)
-        res = "[Square] (3) 1/1 - 1\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s3)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_str_4(self):
-        """ Test __str__ return value """
-        s1 = Square(3)
-        res = "[Square] (1) 0/0 - 3"
-        self.assertEqual(s1.__str__(), res)
-
-    def test_display_3(self):
-        """ Test string printed """
-        s1 = Square(5, 2, 1)
-        res = "\n  #####\n  #####\n  #####\n  #####\n  #####\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            s1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_display_4(self):
-        """ Test string printed """
-        s1 = Square(3)
-        res = "###\n###\n###\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            s1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.x = 1
-        res = " ###\n ###\n ###\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            s1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.y = 2
-        res = "\n\n ###\n ###\n ###\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            s1.display()
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_update(self):
-        """ Test update method """
-        s1 = Square(3)
-        res = "[Square] (1) 0/0 - 3\n"
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.update(5)
-        res = "[Square] (5) 0/0 - 3\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_update_2(self):
-        """ Test update method """
-        s1 = Square(3)
-        res = "[Square] (1) 0/0 - 3\n"
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.update(5)
-        res = "[Square] (5) 0/0 - 3\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_update_3(self):
-        """ Test update method """
-        s1 = Square(1)
-        res = "[Square] (1) 0/0 - 1\n"
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.update(2, 2, 2, 2)
-        res = "[Square] (2) 2/2 - 2\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.update(y=3)
-        res = "[Square] (2) 2/3 - 2\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1.update(id=1, size=10)
-        res = "[Square] (1) 2/3 - 10\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_update_4(self):
-        """ Test update method """
-        s1 = Square(10)
-        res = "[Square] (1) 0/0 - 10\n"
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        dic = {'size': 3, 'y': 5}
-        s1.update(**dic)
-        res = "[Square] (1) 0/5 - 3\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_update_5(self):
-        """ Test update method """
-        s1 = Square(7)
-        res = "[Square] (1) 0/0 - 7\n"
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        dic = {'id': 10, 'x': '5', 'y': 5}
-
-        with self.assertRaises(TypeError):
-            s1.update(**dic)
-
-    def test_to_dictionary(self):
-        """ Test dictionary returned """
-        s1 = Square(1, 2, 3)
-        res = "[Square] (1) 2/3 - 1\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        self.assertEqual(s1.size, 1)
-        self.assertEqual(s1.width, 1)
-        self.assertEqual(s1.height, 1)
-        self.assertEqual(s1.x, 2)
-        self.assertEqual(s1.y, 3)
-        self.assertEqual(s1.id, 1)
-
-        res = "<class 'dict'>\n"
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(type(s1.to_dictionary()))
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_to_dictionary_2(self):
-        """ Test dictionary returned """
-        s1 = Square(2, 2, 2)
-        res = "[Square] (1) 2/2 - 2\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s2 = Square(5)
-        res = "[Square] (2) 0/0 - 5\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s2)
-            self.assertEqual(str_out.getvalue(), res)
-
-        s1_dictionary = s1.to_dictionary()
-        s2.update(**s1_dictionary)
-
-        self.assertEqual(s1.width, s2.width)
-        self.assertEqual(s1.height, s2.height)
-        self.assertEqual(s1.x, s2.x)
-        self.assertEqual(s1.y, s2.y)
-        self.assertEqual(s1.id, s2.id)
-
-        res = "<class 'dict'>\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(type(s1_dictionary))
-            self.assertEqual(str_out.getvalue(), res)
-
-    def test_dict_to_json(self):
-        """ Test Dictionary to JSON string """
-        s1 = Square(2)
-        dictionary = s1.to_dictionary()
-        json_dictionary = Base.to_json_string([dictionary])
-        res = "[{}]\n".format(dictionary.__str__())
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(json_dictionary)
-            self.assertEqual(str_out.getvalue(), res.replace("'", "\""))
-
-    def test_json_file(self):
-        """ Test Dictionary to JSON string """
-        s1 = Square(2)
-        dictionary = s1.to_dictionary()
-        json_dictionary = Base.to_json_string([dictionary])
-        res = "[{}]\n".format(dictionary.__str__())
-        res = res.replace("'", "\"")
-
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(json_dictionary)
-            self.assertEqual(str_out.getvalue(), res)
-
-        Square.save_to_file([s1])
-        res = "[{}]".format(dictionary.__str__())
-        res = res.replace("'", "\"")
-
-        with open("Square.json", "r") as file:
-            res2 = file.read()
-
-        self.assertEqual(res, res2)
-
-    def test_value_square(self):
-        """ Test value pased to Square """
-        with self.assertRaises(ValueError):
-            s1 = Square(-1)
-
-    def test_create(self):
-        """ Test create method """
-        dictionary = {'id': 89}
-        s1 = Square.create(**dictionary)
-        self.assertEqual(s1.id, 89)
-
-    def test_create_2(self):
-        """ Test create method """
-        dictionary = {'id': 89, 'size': 1}
-        s1 = Rectangle.create(**dictionary)
-        self.assertEqual(s1.id, 89)
-        self.assertEqual(s1.size, 1)
-
-    def test_create_3(self):
-        """ Test create method """
-        dictionary = {'id': 89, 'size': 1, 'x': 2}
-        s1 = Rectangle.create(**dictionary)
-        self.assertEqual(s1.id, 89)
-        self.assertEqual(s1.size, 1)
-        self.assertEqual(s1.x, 2)
-
-    def test_create_4(self):
-        """ Test create method """
-        dictionary = {'id': 89, 'size': 1, 'x': 2, 'y': 3}
-        s1 = Rectangle.create(**dictionary)
-        self.assertEqual(s1.id, 89)
-        self.assertEqual(s1.size, 1)
-        self.assertEqual(s1.x, 2)
-        self.assertEqual(s1.y, 3)
-
-    def test_load_from_file_2(self):
-        """ Test load JSON file """
-        s1 = Square(5)
-        s2 = Square(8, 2, 5)
-
-        linput = [s1, s2]
-        Square.save_to_file(linput)
-        loutput = Square.load_from_file()
-
-        for i in range(len(linput)):
-            self.assertEqual(linput[i].__str__(), loutput[i].__str__())
+    def tearDown(self):
+        """Cleans up tasks"""
+        pass
+
+    def test_docstrings(self):
+        self.assertIsNotNone(doc_check)
+        self.assertIsNotNone(Square.__doc__)
+        self.assertIs(hasattr(Square, "__init__"), True)
+        self.assertIsNotNone(Square.__init__.__doc__)
+        self.assertIs(hasattr(Square, "size"), True)
+        self.assertIsNotNone(Square.size.__doc__)
+        self.assertIsNotNone(Square.y.__doc__)
+        self.assertIs(hasattr(Square, "__str__"), True)
+        self.assertIsNotNone(Square.__str__.__doc__)
+        self.assertIs(hasattr(Square, "update"), True)
+        self.assertIsNotNone(Square.update.__doc__)
+        self.assertIs(hasattr(Square, "to_dictionary"), True)
+        self.assertIsNotNone(Square.to_dictionary.__doc__)
+
+# -----------------Tasks_10_11_12 Tests--------------------------------
+
+    def test_class(self):
+        """Test Square class"""
+        self.assertEqual(str(Square), "<class 'models.square.Square'>")
+
+    def test_inheritance(self):
+        """Test if Rectangle inherits from Base"""
+        self.assertTrue(issubclass(Square, Base))
+
+    def test_inheritance(self):
+        """Test if Rectangle inherits from Rectangle"""
+        self.assertTrue(issubclass(Square, Rectangle))
+
+    def test_id_from_Base(self):
+        """Test inherits id from base"""
+        Base._Base__nb_objects = 98
+        Square_test = Square(8)
+        self.assertEqual(Square_test.id, 99)
+
+    def test_init_no_args(self):
+        """Test Square() instantiation without self"""
+        with self.assertRaises(TypeError) as excep:
+            Square_test = Square()
+        message = "__init__() missing 1 required positional argument: 'size'"
+        self.assertEqual(str(excep.exception), message)
+
+    def test_init_one_arg(self):
+        """Test Square() instantiation with one argument"""
+        Square_test = Square(67)
+
+    def test_init_excedent_args(self):
+        """Test Square() instantiation with leftover arguments"""
+        with self.assertRaises(TypeError) as excep:
+            Square_test = Square(45, 56, 89, 102, 56, 23)
+        message = "__init__() takes from 2 to 5 positional \
+arguments but 7 were given"
+        self.assertEqual(str(excep.exception), message)
+
+    def test_instantiation(self):
+        """Test Square() instantiation with 1 arguments"""
+        Square_test = Square(6)
+        self.assertEqual(str(type(Square_test)), "<class \
+'models.square.Square'>")
+        self.assertTrue(isinstance(Square_test, Base))
+        self.assertTrue(isinstance(Square_test, Square))
+        dic = {
+                '_Rectangle__height': 6,
+                '_Rectangle__width': 6,
+                '_Rectangle__x': 0,
+                '_Rectangle__y': 0,
+                'id': 1}
+
+        self.assertEqual(Square_test.__dict__, dic)
+
+    def test_instantiation_positional(self):
+        """Test Square() positional instantiation"""
+        Square_test = Square(4, 12, 7, 8)
+        self.assertEqual(str(type(Square_test)), "<class 'models.\
+square.Square'>")
+        self.assertTrue(isinstance(Square_test, Base))
+        dic = {
+                '_Rectangle__height': 4,
+                '_Rectangle__width': 4,
+                '_Rectangle__x': 12,
+                '_Rectangle__y': 7,
+                'id': 8}
+
+        self.assertEqual(Square_test.__dict__, dic)
+
+    def test_instantiation_no_positional(self):
+        """Test Square() no positional instantiation"""
+        Square_test = Square(id=9, x=4, size=12, y=7)
+        self.assertEqual(str(type(Square_test)), "<class 'models.\
+square.Square'>")
+        self.assertTrue(isinstance(Square_test, Base))
+        dic = {
+                '_Rectangle__height': 12,
+                '_Rectangle__width': 12,
+                '_Rectangle__x': 4,
+                '_Rectangle__y': 7,
+                'id': 9}
+        self.assertEqual(Square_test.__dict__, dic)
+
+    def test_mix_positional(self):
+        """Test Rectangle() positional/no instantiation"""
+        Square_test = Square(9, 100, id=12, y=7)
+        self.assertEqual(str(type(Square_test)), "<class 'models.\
+square.Square'>")
+        self.assertTrue(isinstance(Square_test, Base))
+        dic = {'_Rectangle__height': 9,
+               '_Rectangle__width': 9,
+               '_Rectangle__x': 100,
+               '_Rectangle__y': 7,
+               'id': 12}
+        self.assertEqual(Square_test.__dict__, dic)
+
+    def test_getter_setter(self):
+        """Test getters and setters"""
+        Square_test = Square(5, 8)
+        Square_test.size = 4
+        Square_test.x = 3
+        Square_test.y = 2
+        d = {
+             '_Rectangle__height': 4,
+             '_Rectangle__width': 4,
+             '_Rectangle__x': 3,
+             '_Rectangle__y': 2,
+             'id': 1}
+        self.assertEqual(Square_test.__dict__, d)
+        self.assertEqual(Square_test.width, 4)
+        self.assertEqual(Square_test.height, 4)
+        self.assertEqual(Square_test.x, 3)
+        self.assertEqual(Square_test.y, 2)
+
+    def test_arguments_invalid_type(self):
+        """Test invalid arguments types"""
+        with self.assertRaises(TypeError) as excep:
+            Square_test = Square("34")
+        message = "width must be an integer"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(TypeError) as excep:
+            Square_test = Square(89, "w")
+        message = "x must be an integer"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(TypeError) as excep:
+            Square_test = Square(89, 6, "holby")
+        message = "y must be an integer"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test = Square(-7)
+        message = "width must be > 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test = Square(1, -46)
+        message = "x must be >= 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test = Square(9, 2, -6)
+        message = "y must be >= 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test = Square(0)
+        message = "width must be > 0"
+        self.assertEqual(str(excep.exception), message)
+
+    def invalid_types(self):
+        """Returns lists with different invalid cases"""
+        types = (3.56, float('inf'), float('Nan'), True,
+                 (5, ), -6.792, [8], None, {8, 7})
+        return types
+
+    def validate_types(self):
+        """Test invalid arguments types with different cases"""
+        Square_test = Square(8, 5)
+        attributes = ["x", "y"]
+        for attr in attributes:
+            message = "{} must be an integer".format(attr)
+            for invalid in self.invalid_types():
+                with self.assertRaises(TypeError) as excep:
+                    setattr(Square_test, attr, self.invalid_types)
+                self.assertEqual(str(excep.exception), message)
+        message = "width must be an integer"
+        for invalid in self.invalid_types():
+            with self.assertRaises(TypeError) as excep:
+                setattr(Square_test, "width", invalid)
+            self.assertEqual(str(excep.exception), message)
+
+# ---------------Task_4--------------------------------
+    def test_area_only_size(self):
+        """Test area() with height and witdth only"""
+        Square_test = Square(9)
+        Square_test.area()
+        self.assertEqual(Square_test.area(), 81)
+
+    def test_area_no_self(self):
+        """Test area() without self"""
+        _test = Square(9)
+        with self.assertRaises(TypeError) as excep:
+            Square.area()
+        message = "area() missing 1 required positional argument: 'self'"
+        self.assertEqual(str(excep.exception), message)
+
+    def test_area_positional(self):
+        """Test area() with positional arguments"""
+        Square_test = Square(5, 9, 6, 11)
+        Square_test.area()
+        self.assertEqual(Square_test.area(), 25)
+
+    def test_area_no_positional(self):
+        """Test area() with no positional arguments"""
+        Square_test = Square(id=5, size=9, y=6, x=11)
+        Square_test.area()
+        self.assertEqual(Square_test.area(), 81)
+
+    # ---------------Task_5_&_7 Tests--------------------------------
+
+    def test_display_no_args(self):
+        """Test display() without self"""
+        Square_test = Square(5)
+        with self.assertRaises(TypeError) as excep:
+            Square.display()
+        message = "display() missing 1 required positional argument: 'self'"
+        self.assertEqual(str(excep.exception), message)
+
+    def test_display_no_x_y(self):
+        """Test display() without x and y"""
+        Square_test = Square(1)
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "#\n"
+        self.assertEqual(out_put.getvalue(), out_hope)
+        Square_test.size = 5
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "\
+#####\n\
+#####\n\
+#####\n\
+#####\n\
+#####\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+    def test_display_with_x_y(self):
+        """Test display() with x and y"""
+        Square_test = Square(3, 2, 3, 4)
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "\
+\n\
+\n\
+\n\
+  ###\n\
+  ###\n\
+  ###\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+        Square_test = Square(4, 2, 5)
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "\
+\n\
+\n\
+\n\
+\n\
+\n\
+  ####\n\
+  ####\n\
+  ####\n\
+  ####\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+    def test_display_no_x(self):
+        """Test display() without x"""
+        Square_test = Square(size=5, y=3)
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "\
+\n\
+\n\
+\n\
+#####\n\
+#####\n\
+#####\n\
+#####\n\
+#####\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+        Square_test = Square(7, 0, 4)
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "\
+\n\
+\n\
+\n\
+\n\
+#######\n\
+#######\n\
+#######\n\
+#######\n\
+#######\n\
+#######\n\
+#######\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+        def test_display_no_y(self):
+            """Test display() without y"""
+            Square_test = Square(size=5, x=4)
+            out_put = io.StringIO()
+            with redirect_stdout(out_put):
+                Square_test.display()
+            out_hope = "\
+    #####\n\
+    #####\n\
+    #####\n\
+    #####\n\
+    #####\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+        Square_test = Square(3, 4)
+        out_put = io.StringIO()
+        with redirect_stdout(out_put):
+            Square_test.display()
+        out_hope = "\
+    ###\n\
+    ###\n\
+    ###\n\
+"
+        self.assertEqual(out_put.getvalue(), out_hope)
+
+# ---------------Task_6--------------------------------
+    def test_str__no_self(self):
+        """Test str without self"""
+        Square_test = Square(5, 4, 4)
+        with self.assertRaises(TypeError) as excep:
+            Square.__str__()
+        message = "__str__() missing 1 required positional argument: 'self'"
+        self.assertEqual(str(excep.exception), message)
+
+    def test_n_arg(self):
+        """Test str() with different amount of arguments"""
+        Square_test = Square(8)
+        message = '[Square] (1) 0/0 - 8'
+        self.assertEqual(str(Square_test), message)
+        Square_test = Square(8, 12)
+        message = '[Square] (2) 12/0 - 8'
+        self.assertEqual(str(Square_test), message)
+        Square_test = Square(8, 12, 3)
+        message = '[Square] (3) 12/3 - 8'
+        self.assertEqual(str(Square_test), message)
+        Square_test = Square(8, 12, 3, 4)
+        message = '[Square] (4) 12/3 - 8'
+        self.assertEqual(str(Square_test), message)
+
+# ---------------Tasks_8_&_9--------------------------------
+
+    def test_update_no_self(self):
+        """Test update without self"""
+        Square_test = Square(5, 9)
+        with self.assertRaises(TypeError) as excep:
+            Square.update()
+        message = "update() missing 1 required positional argument: 'self'"
+        self.assertEqual(str(excep.exception), message)
+
+        dic = Square_test.__dict__.copy()
+        Square_test.update()
+        self.assertEqual(Square_test.__dict__, dic)
+
+    def test_update_change_args(self):
+        """Test update with different amount of arguments"""
+        Square_test = Square(7)
+        dic = Square_test.__dict__.copy()
+
+        Square_test.update(55)
+        dic["id"] = 55
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Square_test.update(55, 12)
+        dic["_Rectangle__width"] = 12
+        dic["_Rectangle__height"] = 12
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Square_test.update(55, 12, 7)
+        dic["_Rectangle__x"] = 7
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Square_test.update(55, 12, 7, 1)
+        dic["_Rectangle__y"] = 1
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Base._Base__nb_objects = 0
+        Square_test = Square(2, 2, 2, 2)
+        self.assertEqual(str(Square_test), "[Square] (2) 2/2 - 2")
+
+        Square_test.update(23)
+        self.assertEqual(str(Square_test), "[Square] (23) 2/2 - 2")
+
+        Square_test.update(11, 33)
+        self.assertEqual(str(Square_test), "[Square] (11) 2/2 - 33")
+
+        Square_test.update(4, 13, 8)
+        self.assertEqual(str(Square_test), "[Square] (4) 8/2 - 13")
+
+        Square_test.update(8, 1, 51, 3)
+        self.assertEqual(str(Square_test), "[Square] (8) 51/3 - 1")
+
+    def test_update_args_wrong(self):
+        """Test update with different invalid arguments(args)"""
+        Square_test = Square(11)
+        dic = Square_test.__dict__.copy()
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test.update(2, 0)
+        message = "width must be > 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test.update(9, 1, -98)
+        message = "x must be >= 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test.update(9, 1, 98, -4)
+        message = "y must be >= 0"
+        self.assertEqual(str(excep.exception), message)
+
+    def test_update_args_kwargs(self):
+        """Test update with different valid arguments(kwargs)"""
+        Square_test = Square(7, 4)
+        dic = Square_test.__dict__.copy()
+
+        Square_test.update(id=55)
+        dic["id"] = 55
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Square_test.update(size=12)
+        dic["_Rectangle__width"] = 12
+        dic["_Rectangle__height"] = 12
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Square_test.update(x=7)
+        dic["_Rectangle__x"] = 7
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Square_test.update(y=1)
+        dic["_Rectangle__y"] = 1
+        self.assertEqual(Square_test.__dict__, dic)
+
+        Base._Base__nb_objects = 0
+        Square_test = Square(2, 2, 2, 2)
+        self.assertEqual(str(Square_test), "[Square] (2) 2/2 - 2")
+
+        Square_test.update(x=23)
+        self.assertEqual(str(Square_test), "[Square] (2) 23/2 - 2")
+
+        Square_test.update(y=12, x=33)
+        self.assertEqual(str(Square_test), "[Square] (2) 33/12 - 2")
+
+        Square_test.update(y=4, x=13, size=8)
+        self.assertEqual(str(Square_test), "[Square] (2) 13/4 - 8")
+
+        Square_test.update(size=8, y=1, x=3)
+        self.assertEqual(str(Square_test), "[Square] (2) 3/1 - 8")
+
+        def test_update_kwargs_wrong(self):
+            """Test update with different invalid arguments(kwargs)"""
+            Rect_test = Rectangle(11, 3)
+        dic = Square_test.__dict__.copy()
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test.update(id=9, size=0)
+        message = "width must be > 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test.update(size=9, id=1, x=-1)
+        message = "x must be >= 0"
+        self.assertEqual(str(excep.exception), message)
+
+        with self.assertRaises(ValueError) as excep:
+            Square_test.update(id=9, x=1, size=98, y=-8)
+        message = "y must be >= 0"
+        self.assertEqual(str(excep.exception), message)
+
+# -----------------Task_14---------------------------------
+    def test_dictionary(self):
+        """Test dictionary"""
+        with self.assertRaises(TypeError) as excep:
+            Square.to_dictionary()
+        message = "to_dictionary() missing 1 required \
+positional argument: 'self'"
+        self.assertEqual(str(excep.exception), message)
+
+        Square_test = Square(5, 78)
+        dic = {'x': 78, 'id': 1, 'size': 5, 'y': 0}
+        self.assertEqual(Square_test.to_dictionary(), dic)
+
+        Square_test = Square(78, 5, 2, 9)
+        dic = {'x': 5, 'y': 2, 'id': 9, 'size': 78}
+        self.assertEqual(Square_test.to_dictionary(), dic)
+
+        Square_test1 = Square(1, 4, 5, 6)
+        Square_test1_dic = Square_test1.to_dictionary()
+        Square_test2 = Square(4, 8, 7, 90)
+        Square_test2.update(**Square_test1_dic)
+        self.assertEqual(str(Square_test1), str(Square_test2))
+
+        Square_test1.update(5, 7, 9, 56)
+        dic = {'x': 9, 'y': 56, 'size': 7, 'id': 5}
+        self.assertEqual(Square_test1.to_dictionary(), dic)
+
+
+if __name__ == "__main__":
+    unittest.main()
