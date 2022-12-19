@@ -1,15 +1,15 @@
 #!/usr/bin/node
 /**
- * add - computes the sum of 2 numbers.
+ * add - Computes the sum of 2 numbers.
  * @param {Number} a - The first number.
- * @param {Number} b - the second number.
+ * @param {Number} b - The second number.
  *
- * @returns The sum of the two numbers.
+ * @returns The sum of the 2 numbers.
  */
-
 function add (a, b) {
-	return a + b;
+  return a + b;
 }
+
 console.log(
-	add(Number.parseInt(process.argv[2]), Number.parseInt(process.argv[3]))
+  add(Number.parseInt(process.argv[2]), Number.parseInt(process.argv[3]))
 );
